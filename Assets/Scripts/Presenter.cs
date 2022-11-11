@@ -1,15 +1,40 @@
+using System;
 using UniRx;
 using UnityEngine;
 
 namespace Gauge
 {
-    public class Presenter : MonoBehaviour
+    public class Presenter : IDisposable
     {
-        [SerializeField] private Model _model;
-        [SerializeField] private View _view;
+        //view
+        private View _view;
+        //model
+        private Model _model;
+        
+       CompositeDisposable disposables = new CompositeDisposable();
+       
+       public Presenter(Model model, View view)
+       {
+           Debug.Log("コンストラクタ発動");
+           _model = model;
+           _view = view;
 
-        private void Start()
+           _view.Initialized();
+
+           Bind();
+           SetEvent();
+       }
+
+        private void Bind()
         {
+            //view=>model
+            _view.ObservableClickButton()
+                .Select(_ => +1)
+                .Subscribe(
+                    value => _model.UpdateCount(_model.Value.Value + (int) value),
+                    ex => Debug.LogError("OnError!"),
+                    () => Debug.Log("")).AddTo(disposables);
+
             //model=>view
             _model.Value
                 .Subscribe(x =>
@@ -17,18 +42,19 @@ namespace Gauge
                         _view.UpdateText(x);
                         _view.GaugeValue = x;
                         _view.GaugeAnimation();
-                        if (x >= 10) _view.UninteractiveClick();
                     },
                     ex => Debug.LogError("OnError!"),
-                    () => Debug.Log("OnCompleted!")).AddTo(this);
+                    () => Debug.Log("OnCompleted!")).AddTo(disposables);
+        }
 
-            //view=>model
-            _view.ObserbableClickButton()
-                .Select(_ => +1)
-                .Subscribe(
-                    value => _model.UpdateCount(_model.Value.Value + (int) value),
-                    ex => Debug.LogError("OnError!"),
-                    () => Debug.Log("")).AddTo(this);
+        private void SetEvent()
+        {
+            _model.OnCallback += _view.UnInteractiveClick;
+        }
+        
+        public void Dispose()
+        {
+            disposables.Dispose();
         }
     }
 }

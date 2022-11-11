@@ -1,0 +1,35 @@
+﻿@startuml
+'https://plantuml.com/class-diagram
+
+namespace Gauge{
+
+class Presenter{
+}
+
+class Model{
+}
+
+class View{
+}
+
+}
+
+class ZenjectBinding
+{
+
+}
+
+class Installer
+{
+
+}
+
+Gauge.Presenter--->Gauge.View
+Gauge.Presenter--->Gauge.Model
+
+ZenjectBinding-->Gauge.Presenter : Viewを注入
+ZenjectBinding<--Gauge.View
+Installer-->Gauge.Presenter : Modelを注入
+Installer<--Gauge.Model
+
+@enduml

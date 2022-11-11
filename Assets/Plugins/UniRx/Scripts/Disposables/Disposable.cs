@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace UniRx
 {
-    public static class Disposable
+    public class Disposable
     {
         public static readonly IDisposable Empty = EmptyDisposable.Singleton;
 

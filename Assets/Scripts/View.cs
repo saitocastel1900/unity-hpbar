@@ -12,6 +12,18 @@ namespace Gauge
         [SerializeField] private TextMeshProUGUI _text;
         [SerializeField] private Button _button;
 
+        /// <summary>
+        /// 初期化
+        /// </summary>
+        public void Initialized()
+        {
+            UpdateText(0);
+        }
+
+        /// <summary>
+        /// 文字の数値を加算
+        /// </summary>
+        /// <param name="value"></param>
         public void UpdateText(int value)
         {
             _text.text = value.ToString("#,0") + "/10";
@@ -32,12 +44,19 @@ namespace Gauge
         }
         */
 
-        public IObservable<Unit> ObserbableClickButton()
+        /// <summary>
+        /// ボタンクリックのObservableを返す
+        /// </summary>
+        /// <returns></returns>
+        public IObservable<Unit> ObservableClickButton()
         {
             return _button.OnClickAsObservable();
         }
 
-        public void UninteractiveClick()
+        /// <summary>
+        /// ボタンオブジェクトを非アクティブにする
+        /// </summary>
+        public void UnInteractiveClick()
         {
             _button.GetComponent<Button>().interactable=false;
         }
@@ -45,7 +64,6 @@ namespace Gauge
         #region GaugeAnimaion
 
         [SerializeField] private Image _gaugeImage;
-        
         [SerializeField] private float _gaugeValue;
 
         public float GaugeValue
@@ -71,7 +89,7 @@ namespace Gauge
                 .OnComplete(() => Debug.Log("アニメーション修了"))
                 .SetEase(Ease.OutCubic);
         }
+        
+        #endregion
     }
-
-    #endregion
 }
