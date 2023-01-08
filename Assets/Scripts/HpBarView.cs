@@ -7,20 +7,47 @@ using Extensions;
 using TMPro;
 using Utility;
 
-namespace Gauge
+namespace HpBar
 {
     /// <summary>
-    /// 
+    /// HPバーのView
     /// </summary>
     public class HpBarView : MonoBehaviour
     {
-        //HPバーを動かすボタン
+        /// <summary>
+        /// HPバーを動かすボタン
+        /// </summary>
         [SerializeField] private Button _button;
 
-        //HPバー
+        /// <summary>
+        /// HPバーの画像
+        /// </summary>
         [SerializeField] private Image _barImage;
+        
+        /// <summary>
+        /// HPバーアニメーションの間隔
+        /// </summary>
         [SerializeField] private float _barAnimationDuration = 0.2f;
 
+        /// <summary>
+        /// HPカウンター
+        /// </summary>
+        [SerializeField] private TextMeshProUGUI _counterText;
+        
+        /// <summary>
+        /// HPバーアニメーションで使うtweener
+        /// </summary>
+        private Tweener _tweener;
+
+        /// <summary>
+        /// 初期化
+        /// </summary>
+        public void Initialize()
+        {
+            SetCounter(0);
+            _tweener = null;
+        }
+        
         /// <summary>
         /// クリックのObservableを返す
         /// </summary>
@@ -36,33 +63,20 @@ namespace Gauge
         {
             _button.GetComponent<Button>().interactable = false;
         }
-
-        private Tweener _tweener;
-
+        
         /// <summary>
-        /// 
+        /// HPバーの増加アニメーション
         /// </summary>
         public void BarAnimation(float _barValue)
         {
-            _tweener = HpBarAnimationUtility.FillAmountTween(_barImage, _barValue, _barAnimationDuration)
+            _tweener = HpBarAnimationUtility.FillAmountTweener(_barImage, _barValue, _barAnimationDuration)
                 .OnComplete(() =>_tweener.KillIfNotNull(true)).SetLink(this.gameObject);
         }
-        
-        //HPカウンター
-        [SerializeField] private TextMeshProUGUI _counterText;
-        
+
         /// <summary>
-        /// 初期化
+        /// カウンターの数字を設定
         /// </summary>
-        public void Initialized()
-        {
-            UpdateCounter(0);
-        }
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        public void UpdateCounter(int counter)
+        public void SetCounter(int counter)
         {
             _counterText.text = counter.ToString("#,0") + "/10";
         }

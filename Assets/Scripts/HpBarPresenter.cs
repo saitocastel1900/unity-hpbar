@@ -1,57 +1,81 @@
 using System;
 using UniRx;
 using UnityEngine;
+using Zenject;
 
-namespace Gauge
+namespace HpBar
 {
     /// <summary>
-    /// 
+    /// HPのPresenter
     /// </summary>
-    public class HpBarPresenter : IDisposable
+    public class HpBarPresenter : IInitializable,IDisposable
     {
-        //view
+        /// <summary>
+        /// View
+        /// </summary>
         private HpBarView _view;
-        //model
+        
+        /// <summary>
+        /// Model
+        /// </summary>
         private HpBarModel _model;
         
+        //購読を解除するためのCompositeDisposable
        CompositeDisposable disposables = new CompositeDisposable();
        
+       /// <summary>
+       /// コンストラクタ
+       /// </summary>
        public HpBarPresenter(HpBarModel model, HpBarView view)
        {
            Debug.Log("コンストラクタ発動");
            _model = model;
            _view = view;
-
-           _view.Initialized();
+       }
+       
+       /// <summary>
+       /// Initialize
+       /// </summary>
+       public void Initialize()
+       {
+           _view.Initialize();
            Bind();
            SetEvent();
        }
 
+       /// <summary>
+       /// Bind
+       /// </summary>
        private void Bind()
        {
-           //view=>model
-           _view.ObservableClickButton()
-               .Subscribe(_ => _model.UpdateHp(),
-                   ex => Debug.LogError("OnError!"),
-                   () => Debug.Log("")).AddTo(disposables);
-
-           //model=>view
+           //HPが変化したら、カウンターを描画する
            _model.HpProp
                .Subscribe(
-                   _view.UpdateCounter,
+                   _view.SetCounter,
                    ex => Debug.LogError("OnError!"),
                    () => Debug.Log("OnCompleted!")).AddTo(disposables);
 
-           _model.HpBarAmountProp
+           //バー画像のFillAmountの数値が変化したら、
+           _model.HpBarFillAmountProp
                .Subscribe(_view.BarAnimation,
                    ex => Debug.LogError("OnError!"),
                    () => Debug.Log("OnCompleted!"))
                .AddTo(disposables);
         }
 
-        private void SetEvent()
+       /// <summary>
+       /// イベント設定
+       /// </summary>
+       private void SetEvent()
         {
+            //ボタンを押せなくさせるイベントを追加
             _model.OnCallback += _view.UnInteractiveClick;
+            
+            //ボタンが押されたらHPを増加させる
+            _view.ObservableClickButton()
+                .Subscribe(_ => _model.UpdateValue(),
+                    ex => Debug.LogError("OnError!"),
+                    () => Debug.Log("")).AddTo(disposables);
         }
         
         public void Dispose()
