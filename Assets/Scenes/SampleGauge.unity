@@ -243,11 +243,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99c62e7487808bc44bfea2d8e95b56ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _text: {fileID: 492530183}
   _button: {fileID: 1673880178}
-  _gaugeImage: {fileID: 716192231}
-  _gaugeValue: 0
-  duration: 0.2
+  _counterText: {fileID: 492530183}
+  _barImage: {fileID: 716192231}
+  _barAnimationDuration: 0.2
 --- !u!114 &146030979
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -587,7 +586,7 @@ MonoBehaviour:
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 0
-  m_FillAmount: 1
+  m_FillAmount: 0
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
